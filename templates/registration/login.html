@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block header %}
+{% endblock %}
+{% block content %}
+    {% if user.is_authenticated %}
+        What are you doing? You're already logged in.
+        <a href="/">Home</a>
+        <a href="/accounts/logout/">Logout</a>
+    {% else %}
+        <form method="post" action=".">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="actions">
+                <input type="submit" value="{% trans 'Log in' %}" class="btn primary"/>
+                <input type="hidden" name="next" value="{{ next }}" />
+            </div>
+        </form>
+        <p>
+            {% trans "Forgot password" %}? <a href="/accounts/password/reset/">{% trans "Reset it" %}</a>!
+        </p>
+    {% endif %}
+{% endblock %}

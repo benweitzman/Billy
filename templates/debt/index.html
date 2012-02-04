@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+	<div class="page-header">
+		<h1>Settle yo&apos; debts</h1>
+	</div>
+        <div class="main">
+            <table class="bordered-table">
+                <tr>
+                    <td class="span1">Payer\Payee</td>
+                    {% for payee in matrix.0 %}
+                    <td>{{payee.payee}}</td>
+                    {% endfor %}
+                </tr>
+                {% for row in matrix %}
+                <tr>
+                    <td>{{row.0.payer}}</td>
+                    {% for debt in row %}
+                    {% if debt.payer == debt.payee %}
+                    <td>-</td>
+                    {% else %}
+                    <td>{{debt.amount}}</td>
+                    {% endif %}
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </table>
+            <div>
+                <div class="pull-left" style="width:50%;">
+                    <h3 class="btn" onclick="$('#debtForm').slideToggle()">Add Debt</h3>
+                    <br/><br/>
+                    <form action="." class="form-stacked" id="debtForm"
+                    {% if not form.errors %}
+                    style="display:none"
+                    {% endif %}
+                    method="POST">
+                        {{form.as_p}}
+                        {% csrf_token %}
+                        <div class="actions">
+                            <input type="submit" class="btn primary"/>
+                        </div>
+                    </form>
+                </div>
+                <div class="pull-right" style="width:50%;">
+                    <h3 class="btn" onclick="$('#multiForm').slideToggle()">Add Multi</h3>
+                    <br/><br/>
+                    <form action="." class="form-stacked" id="multiForm"
+                    {% if not multiform.errors %}
+                    style="display:none"
+                    {% endif %}
+                    method="POST">
+                        {{multiform.as_p}}
+                        {% csrf_token %}
+                        <div class="actions">
+                            <input type="submit" name='multi' class="btn primary"/>
+                        </div>
+                    </form>
+                </div>
+                <div class="clear"></div>
+                </div>
+            </div>
+        
+        <div class="sidebar">
+            <div id="memos"></div>
+        </div>
+        <div class="clear"></div>
+
+{% endblock %}

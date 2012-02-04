@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+	<div class="page-header">
+		<h1>Hear Ye, Hear Ye</h1>
+	</div>
+        <div>
+            <h3 class="btn" onclick="$('#announceForm').slideToggle()">Make Announcement</h3>
+            <form id="announceForm" action="" method="POST" class="form-stacked" style="display:none">
+                {% csrf_token %}
+                {{form.as_p}}
+                <div class="actions">
+                    <input type="submit" class="btn primary"/>
+                </div>
+            </form>
+        </div>
+        <br />
+        {% for a in announcements %}
+            <div class="announcement well">
+                <h3 class="pull-left">
+                    {% if a.poster == user %}
+                    You
+                    {% else %}
+                    {{a.poster.first_name}}
+                    {% endif %}
+                    wrote:
+                </h3>
+                <div class="pull-right">
+                    {{a.date}}
+                </div>
+                <div class="clear"></div>
+                {{a.text}}
+                {% if a.poster == user %}
+                    <div>
+                        <h3 class="btn" onclick="$('#msgform{{a.id}}').slideToggle()">Send Out</h3>
+                        <form id='msgform{{a.id}}' action="send/{{a.id}}" method="POST" class="form-stacked" style="display:none">
+                            {% csrf_token %}
+                            {{sendform.as_p}}
+                            <div class="actions">
+                                <input type="submit" class="btn primary"/>
+                            </div>
+                        </form>
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+{% endblock %}

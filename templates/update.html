@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+        <form action="" method="POST">
+            {% csrf_token %}
+            {% for formname, form in forms.items %}
+            {{form.as_p}}
+            {% endfor %}
+            <div class="actions">
+                <input type="submit" class="btn primary"/>
+            </div>
+        </form>
+{% endblock %}

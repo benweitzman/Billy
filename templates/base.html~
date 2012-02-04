@@ -1,0 +1,90 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}Billy{% endblock %}</title>
+    <link rel="SHORTCUT ICON" href="/static/images/favicon.ico">
+    <link rel="stylesheet" href="/static/styles/main.css"/>
+    <link rel="stylesheet" href="/static/styles/bootstrap.min.css"/>
+    <script src="/static/scripts/jquery-1.7.1.min.js"></script>
+    <script src="/static/scripts/bootstrap-dropdown.js"></script>
+    <script src="/static/scripts/bootstrap-modal.js"></script>
+    <script src="/static/scripts/showmemos.js"></script>
+</head>
+
+<body>
+<div id="lightbox">
+    <div id="curtain"></div>
+    <div id="stage">
+
+    </div>
+</div>
+<div id="autocomplete"></div>
+<div id="centerSearch">
+    <div id="background"></div>
+    <div id="center">
+        <form target="_blank" action="/">
+            <input type="text" value="Search"/>
+        </form>
+    </div>
+</div>
+{% block header %}
+<div class="topbar">
+    <div class="fill">
+        <div class="container">
+            <a class="brand" href="/">Billy</a>
+            <ul class="nav" id="topNav">
+                <li><a href="/">Home</a></li>
+                <li><a href="/debts/">Debts</a></li>
+                <li><a href="/announcements/">Announcements</a></li>
+                <li><a href="/weekly/">Weekly Tasks</a></li>
+            </ul>
+            <ul class="nav secondary-nav">
+                <li class="dropdown" data-dropdown="dropdown">
+                    <a href="#" class="dropdown-toggle">{{user.username}}</a>
+
+                    <ul class="dropdown-menu">
+                        <li><a href="{% url Billy.views.update %}">Update Info</a></li>
+                        <li><a href="{% url django.contrib.auth.views.logout %}">Logout</a></li>
+
+                        {% if user.get_profile.invites > 0 or user.is_staff %}
+                        <li class="divider"></li>
+                        <li><a href="{% url invitation.views.invite %}">Invite (
+                            {% if user.is_staff %}
+                                INF
+                            {% else %}
+                                {{user.get_profile.invites}}
+                            {% endif %}
+                        )</a></li>
+                        {% endif %}
+                     
+                        {% if user.is_staff %}
+                        <li class="divider"></li>
+                        <li><a href="/admin/">Admin</a></li>
+                        {%endif %}
+                    </ul>
+                    
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+<div class="container">
+    <div id="content" class="content">
+        {% block content %}{% endblock %}
+    </div>
+
+
+</div>
+<footer class="footer">
+    <div class="container">
+        {% block footer %}
+        Billy is a cream.ly product.
+        {% endblock %}
+    </div>
+</footer>
+</body>
+
+</html>

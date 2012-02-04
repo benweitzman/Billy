@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+	
+	<div class="page-header">
+		<h1>Dey Tuk R Jarbs!</h1>
+	</div>
+	<div class="row">
+		<div class="span4">	
+			<h3>Shopping this week: </h3>
+			{% for shopper in shoppers %}{% if not forloop.first %},
+			{% endif %}{{shopper.first_name}}{% endfor %}
+			{% if user in shoppers %}
+				<span class="pull-right"><input type="button" value="Make Trade" class="btn" onclick="$('#tradeform').slideToggle()"/></span><span class="clear"></span>
+				<form id="tradeform" action="" method="POST" class="form-stacked" style="display:none;">
+					{% csrf_token %}
+					{{tradingForm.as_p}}
+					<input type="submit" class="btn primary" name="trade"/>
+				</form>
+				<br/><br/>
+				<input type="button" value="Redeem Trade" class="btn span4" onclick="$('#redeems').slideToggle()"/>
+				<div id="redeems" style="display:none;">
+					{% for trade in redeemables %}
+						<a href="/weekly/redeem/{{trade.id}}">{{trade.giver.first_name}}->{{trade.taker.first_name}}</a>
+					{% empty %}
+						No trades to redeem
+					{% endfor %}
+				</div>
+			{% endif %}
+			<br/><br/>
+			<h3>Cleaning this week: </h3>
+			{% for cleaner in cleaners %}{% if not forloop.first %},
+			{% endif %}{{cleaner.first_name}}{% endfor %}
+		</div>		
+		<div class="span12">
+			<h3>Grocery List</h3>
+			<div class="row">
+				<div class="span6">
+					<input type="button" value="Add Item" class="btn"
+						onclick="$('#itemadd').slideToggle()" />
+					<form id="itemadd" action="" method="POST" class="form-stacked" 
+						{% if not addItem.errors %}
+							style="display:none"
+						{% endif %}
+						>
+						{% csrf_token %}
+						{{addItem.as_p}}
+						<input name="itemadd" type="submit" class="btn primary"/>
+					</form>
+				</div>
+				<div class="span6">
+					<input type="button" value="Add Group" class="btn"
+						onclick="$('#groupadd').slideToggle()" />
+					<form id="groupadd" action="" method="POST" class="form-stacked"
+						{% if not addGroup.errors %}
+							style="display:none"
+						{% endif %}
+						>
+						{% csrf_token %}
+						{{addGroup.as_p}}
+						<input name="groupadd" type="submit" class="btn primary"/>
+					<form>
+				</div>
+			</div>
+			<div class="row">
+				<form action="" method="POST">
+					{% csrf_token %}
+					{{ items.management_form }}
+					{% regroup items by instance.group as group_list %}
+					{% for group in group_list %}
+						
+							<fieldset>
+								<legend>{{group.grouper}}</legend>
+								{% for item in group.list %}
+									{% if forloop.counter0|divisibleby:4 %}
+										{% if not forloop.first%}
+											</div>
+											<br/><br/>
+										{% endif %}
+										<div class="row">
+									{% endif %}
+									<div class="span3"/>
+                                                                                <div class="pull-right">
+											
+											{% for field in item %}
+												{% if forloop.first %}
+													<label for="{{field.auto_id}}" style="float:none;">
+														<abbr title="{{item.instance.name}}">
+															{{item.instance.name|truncatechars:15}}:
+														</abbr>
+													</label>
+												{% endif %}
+												{{field}}
+											  	{{field.errors}}
+										  	{% endfor %}
+                                                                                </div>
+									</div>
+									{% if forloop.counter.last %}
+										</div>
+									{% endif %}
+								{% endfor %}
+							</fieldset>
+						
+					{% endfor %}
+					<div class="actions">
+				 		<input name="groceries" type="submit" class="btn primary" value="Update"/>
+						<input name="clear" type="submit" class="btn" value="Clear"/>
+					</div>
+				 </form>
+			</div>
+		</div>	
+	</div>
+{% endblock %}

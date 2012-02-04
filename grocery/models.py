@@ -1,0 +1,64 @@
+from django.db import models
+from django.forms import ModelForm
+from django.contrib.auth.models import User
+
+class GroceryGroup(models.Model):
+	name = models.CharField(max_length=100,unique=True)
+	
+	def __unicode__(self):
+		return self.name
+	
+class Item(models.Model):
+	group = models.ForeignKey(GroceryGroup)
+	name = models.CharField(max_length=100,unique=True)
+	need = models.BooleanField(default=True)
+	quantity = models.IntegerField(default=1)
+	
+	def __unicode__(self):
+		return self.name
+		
+	class Meta:
+		ordering = ['group__name']
+
+class Trade(models.Model):
+	giver = models.ForeignKey(User,related_name="giver")
+	taker = models.ForeignKey(User,related_name="taker")
+	date = models.DateTimeField(auto_now=True)
+	
+	class Meta:
+		ordering = ['-date']
+	
+class TradeForm(ModelForm):
+	def __init__(self, *args, **kwargs):
+		super(TradeForm, self).__init__(*args, **kwargs)
+		self.fields['giver'].widget.attrs['class'] = 'span3'
+		self.fields['taker'].widget.attrs['class'] = 'span3'
+	class Meta:
+		model = Trade
+		exclude = ('date')
+
+class Redeem(models.Model):
+	trade = models.ForeignKey(Trade)
+	date = models.DateTimeField(auto_now=True)
+	
+	class Meta:
+		ordering = ['-date']
+
+class GroupForm(ModelForm):
+	class Meta:
+		model = GroceryGroup
+
+class ItemAdd(ModelForm):
+	class Meta:
+		model = Item
+
+class ItemForm(ModelForm):
+	def __init__(self, *args, **kwargs):
+		super(ItemForm, self).__init__(*args, **kwargs)
+		self.fields['quantity'].widget.attrs['class'] = 'span1'
+		
+	class Meta:
+		model = Item
+		exclude = ('group','name')
+	
+	
